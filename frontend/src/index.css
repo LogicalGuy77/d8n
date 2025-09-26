@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "reactflow/dist/style.css";
+
+body {
+  background-color: #f3f4f6; /* A light gray background */
+}
+
+/* Custom styles for React Flow to match the Excalidraw/n8n feel */
+.react-flow .react-flow__handle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  border: 1px solid #94a3b8;
+}
+
+.react-flow .react-flow__handle-connecting {
+  background: #60a5fa;
+}
+
+.react-flow .react-flow__edge-path {
+  stroke: #94a3b8;
+  stroke-width: 2;
+}
