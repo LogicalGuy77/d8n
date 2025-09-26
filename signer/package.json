@@ -1,0 +1,15 @@
+{
+  "name": "signer",
+  "version": "1.0.0",
+  "description": "Signer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "viem": "^2.37.8"
+  }
+}
