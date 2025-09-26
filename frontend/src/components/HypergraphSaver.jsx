@@ -11,11 +11,25 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
+  // Debug logging to help identify the issue
+  console.log("HypergraphSaver - Debug info:", {
+    isConnected,
+    hasWalletClient: !!walletClient,
+    address,
+    walletClientStatus: walletClient ? "available" : "not available",
+  });
+
   const handleSaveToHypergraph = async () => {
-    if (!isConnected || !walletClient) {
+    if (!isConnected) {
       alert("Please connect your wallet first.");
       return;
     }
+
+    if (!walletClient) {
+      alert("Wallet client not ready. Please wait a moment and try again.");
+      return;
+    }
+
     if (!workflowName) {
       alert("Please provide a name for the workflow.");
       return;
@@ -86,10 +100,17 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
     }
   };
 
+  const getButtonText = () => {
+    if (isSaving) return "Saving...";
+    if (!isConnected) return "Connect Wallet First";
+    if (!walletClient) return "Wallet Loading...";
+    return "Save to Hypergraph";
+  };
+
   return (
     <button
       onClick={handleSaveToHypergraph}
-      disabled={isSaving || !isConnected}
+      disabled={isSaving || !isConnected || !walletClient}
       className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 flex items-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed"
     >
       {isSaving ? (
@@ -97,7 +118,7 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
       ) : (
         <UploadCloud size={16} />
       )}
-      {isSaving ? "Saving..." : "Save to Hypergraph"}
+      {getButtonText()}
     </button>
   );
 }
