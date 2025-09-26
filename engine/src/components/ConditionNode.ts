@@ -7,18 +7,18 @@ export class ConditionNode implements Node {
     type = "condition";
     inputs: Record<string, any> = {};
     outputs: { path: string | null } = { path: null };
-    nodeData: { condition: string };
+    condition: string;
 
-    constructor(id: string, label: string, inputs: Record<string, any>, nodeData: { condition: string }) {
+    constructor(id: string, label: string, inputs: Record<string, any>, condition: string) {
         this.id = id;
         this.label = label;
-        this.nodeData = nodeData;
+        this.condition = condition;
         this.inputs = inputs;
     }
 
     execute() {
         const parser = new Parser();
-        const expr = parser.parse(this.nodeData.condition);
+        const expr = parser.parse(this.condition);
 
         const result = expr.evaluate(this.inputs);
 

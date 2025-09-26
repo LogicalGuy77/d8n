@@ -8,7 +8,7 @@ export class PythNode implements Node {
     type = "pyth";
     inputs: Record<string, any> = {};
     outputs: { price: number} = {price: NaN};
-    nodeData: { priceId: string[] | undefined};
+    priceId: string = "";
     connection = new HermesClient("https://hermes.pyth.network", {});
     private priceFeed: string;
 
@@ -20,9 +20,9 @@ export class PythNode implements Node {
         // Get the price ID from the PythIds mapping
         const priceId = PythIds[priceFeed];
         if (priceId) {
-            this.nodeData = {priceId: [priceId]};
+            this.priceId = priceId;
         } else {
-            this.nodeData = {priceId: undefined};
+            this.priceId = "";
             console.log(`Invalid price feed: ${priceFeed}`);
         }
     }
@@ -30,13 +30,13 @@ export class PythNode implements Node {
     async execute() {
         try {
             // Check if we have a valid price ID
-            if (!this.nodeData.priceId) {
+            if (!this.priceId) {
                 console.log(`No valid price ID for feed: ${this.priceFeed}`);
                 this.outputs.price = NaN;
                 return;
             }
             
-            const priceUpdates = await this.connection.getLatestPriceUpdates(this.nodeData.priceId);
+            const priceUpdates = await this.connection.getLatestPriceUpdates([this.priceId]);
             const parsed_prices = priceUpdates.parsed;
             // Extract price from the response and update outputs
             if (parsed_prices) {

@@ -6,15 +6,13 @@ export class Workflow {
     nodes: Record<string, Node> = {};
     edges: Edges;
 
-    constructor(type: string, nodes: Node[], edges: Edges) {
+    constructor(type: string, nodes: Record<string, Node>, edges: Edges) {
         if(type === "once" || type === "repeat") this.type = type;
         else{
             console.log("Type not specified");
         }
         this.edges = edges;
-        for (const node of nodes) {
-            this.nodes[node.id] = node;
-        }
+        this.nodes = nodes;
     }
 
     async run() {
@@ -83,6 +81,7 @@ export class Workflow {
     }
 
     async start() {
+        await this.run();
         while(this.type === "repeat"){
             await this.run();
         }

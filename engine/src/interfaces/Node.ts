@@ -4,6 +4,5 @@ export interface Node{
     type: string;
     inputs: Record<string, any>;
     outputs: Record<string, any>;
-    nodeData: Record<string, any>;
     execute(): void | Promise<void>;
 }
