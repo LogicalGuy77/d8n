@@ -23,6 +23,19 @@ const client = new MongoClient(uri, {
   },
 });
 
+let db;
+
+async function connectDB() {
+  try {
+    await client.connect();
+    db = client.db("d8n_main"); // Your database name
+    console.log("Successfully connected to MongoDB!");
+  } catch (err) {
+    console.error("Failed to connect to MongoDB", err);
+    process.exit(1); // Exit the process with an error
+  }
+}
+
 // --- API Endpoint to Save a Workflow ---
 app.post("/api/workflows", async (req, res) => {
   const { user_wallet, workflow_name, workflow_data } = req.body;
@@ -33,8 +46,6 @@ app.post("/api/workflows", async (req, res) => {
   }
 
   try {
-    await client.connect();
-    const db = client.db("d8n_main"); // Your database name
     const collection = db.collection("workflows"); // Your collection name
 
     // This query finds a workflow with the specific wallet address AND workflow name.
@@ -71,9 +82,6 @@ app.post("/api/workflows", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to save workflow." });
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
   }
 });
 
@@ -86,8 +94,6 @@ app.get("/api/workflows/:walletAddress", async (req, res) => {
   }
 
   try {
-    await client.connect();
-    const db = client.db("d8n_main");
     const collection = db.collection("workflows");
 
     // Find all documents that match the walletAddress
@@ -99,11 +105,12 @@ app.get("/api/workflows/:walletAddress", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch workflows." });
-  } finally {
-    await client.close();
   }
 });
 
-app.listen(port, () => {
-  console.log(`d8n backend server listening at http://localhost:${port}`);
+// Connect to DB and then start the server
+connectDB().then(() => {
+  app.listen(port, () => {
+    console.log(`d8n backend server listening at http://localhost:${port}`);
+  });
 });
