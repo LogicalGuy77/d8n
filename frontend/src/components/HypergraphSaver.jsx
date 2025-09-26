@@ -1,28 +1,27 @@
-// src/components/HypergraphSaver.jsx
+//src/components/HypergraphSaver.jsx
 
-import { useState } from "react";
-import { useAccount, useWalletClient, useConnectorClient } from "wagmi";
-// The new, correct imports based on the latest documentation
+import { useState , useEffect} from "react";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { Graph, Ipfs } from "@graphprotocol/grc-20";
 import { UploadCloud, Loader2 } from "lucide-react";
 
 export default function HypergraphSaver({ workflowName, nodes, edges }) {
   const [isSaving, setIsSaving] = useState(false);
+  const [preparingTx, setPreparingTx] = useState(false);
   const { address, isConnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const { data: connectorClient } = useConnectorClient();
+  const { writeContract, data: hash, isPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
 
-  // Use fallback client if walletClient is not available
-  const client = walletClient || connectorClient;
-
-  // Debug logging to help identify the issue
   console.log("HypergraphSaver - Debug info:", {
     isConnected,
-    hasWalletClient: !!walletClient,
-    hasConnectorClient: !!connectorClient,
-    hasClient: !!client,
     address,
-    clientStatus: client ? "available" : "not available",
+    isSaving,
+    preparingTx,
+    isPending,
+    isConfirming,
+    isSuccess,
   });
 
   const handleSaveToHypergraph = async () => {
@@ -31,21 +30,17 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
       return;
     }
 
-    if (!client) {
-      alert("Wallet client not ready. Please wait a moment and try again.");
-      return;
-    }
-
     if (!workflowName) {
       alert("Please provide a name for the workflow.");
       return;
     }
+
     setIsSaving(true);
+    setPreparingTx(true);
     console.log("Starting Hypergraph save process...");
 
     try {
       // Step 1: Create a new "Space" for your workflow on the testnet.
-      // A space is like a repository or a container.
       console.log("Step 1/5: Creating space...");
       const space = await Graph.createSpace({
         editorAddress: address,
@@ -56,7 +51,6 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
       console.log(`Space created with ID: ${spaceId}`);
 
       // Step 2: Create an "Entity" with the workflow data.
-      // We'll store the entire nodes/edges structure as a JSON string in the description.
       console.log("Step 2/5: Creating entity...");
       const workflowData = { nodes, edges };
       const { ops } = await Graph.createEntity({
@@ -80,46 +74,66 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
         `${Graph.TESTNET_API_ORIGIN}/space/${spaceId}/edit/calldata`,
         {
           method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({ cid }),
         }
       );
+      
+      if (!result.ok) {
+        throw new Error(`HTTP error! status: ${result.status}`);
+      }
+      
       const { to, data } = await result.json();
       console.log("Transaction data received.");
+      
+      setPreparingTx(false);
 
-      // Step 5: Send the transaction using the user's wallet.
-      // This will trigger a signature request in MetaMask.
+      // Step 5: Send the transaction using writeContract
       console.log("Step 5/5: Sending transaction...");
-      const txResult = await client.sendTransaction({
-        // @ts-expect-error - viem account type mismatch is a known issue with the SDK
-        account: client.account,
-        to: to,
+      writeContract({
+        address: to,
         data: data,
+        value: 0n,
       });
-      console.log("Transaction successful:", txResult);
 
-      alert(`Workflow "${workflowName}" successfully saved to Hypergraph!`);
     } catch (error) {
       console.error("Failed to save to Hypergraph:", error);
       alert(`Error: ${error.message}`);
-    } finally {
       setIsSaving(false);
+      setPreparingTx(false);
     }
   };
 
+  // Handle transaction success
+  useEffect(() => {
+    if (isSuccess) {
+      alert(`Workflow "${workflowName}" successfully saved to Hypergraph!`);
+      setIsSaving(false);
+      setPreparingTx(false);
+    }
+  }, [isSuccess, workflowName]);
+
   const getButtonText = () => {
-    if (isSaving) return "Saving...";
+    if (preparingTx) return "Preparing Transaction...";
+    if (isPending) return "Confirm in Wallet...";
+    if (isConfirming) return "Confirming Transaction...";
     if (!isConnected) return "Connect Wallet First";
-    if (!client) return "Wallet Loading...";
     return "Save to Hypergraph";
+  };
+
+  const isButtonDisabled = () => {
+    return isSaving || !isConnected || preparingTx || isPending || isConfirming;
   };
 
   return (
     <button
       onClick={handleSaveToHypergraph}
-      disabled={isSaving || !isConnected || !client}
+      disabled={isButtonDisabled()}
       className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 flex items-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed"
     >
-      {isSaving ? (
+      {(isSaving || preparingTx || isPending || isConfirming) ? (
         <Loader2 className="animate-spin" size={16} />
       ) : (
         <UploadCloud size={16} />
