@@ -17,26 +17,8 @@ import HypergraphSaver from "./components/HypergraphSaver";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { metaMask } from "wagmi/connectors";
 
-const NODE_CONFIG = {
-  "pyth-network": {
-    label: "Pyth Price Feed",
-    inputs: {},
-    outputs: { price: { type: "float" } },
-    "node-data": { symbol: "btc/usd" },
-  },
-  condition: {
-    label: "Condition",
-    inputs: { price: { type: "float" } },
-    outputs: { "true-path": { type: "bool" }, "false-path": { type: "bool" } },
-    "node-data": { condition: "price > 100000" },
-  },
-  swap: {
-    label: "1inch Swap",
-    inputs: { activate: { type: "bool" } },
-    outputs: {},
-    "node-data": { symbol: "btc", sender: "", receiver: "" },
-  },
-};
+// Import node configuration
+import { NODE_CONFIG } from "./config/nodeConfig";
 
 let id = 1;
 const getId = () => `${id++}`;
