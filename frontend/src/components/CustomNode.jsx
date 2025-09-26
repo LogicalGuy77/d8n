@@ -1,6 +1,6 @@
 import React from "react";
-import { Handle, Position } from "reactflow";
-import { Cloud, GitBranch, Repeat, Zap } from "lucide-react";
+import { Handle, Position, useReactFlow } from "reactflow";
+import { Cloud, GitBranch, Repeat, Zap, X } from "lucide-react";
 
 const icons = {
   "pyth-network": <Cloud size={16} />,
@@ -9,7 +9,8 @@ const icons = {
   default: <Zap size={16} />,
 };
 
-function CustomNode({ data, isConnectable, selected }) {
+function CustomNode({ data, isConnectable, selected, id }) {
+  const { setNodes, setEdges } = useReactFlow();
   const icon = icons[data.type] || icons.default;
   const borderClass = selected ? "border-blue-500" : "border-slate-300";
 
@@ -21,13 +22,30 @@ function CustomNode({ data, isConnectable, selected }) {
   const baseTopOffset = 70; // Initial vertical distance from the top of the node
   const handleSpacing = 25; // Vertical distance between multiple handles
 
+  const onDelete = (e) => {
+    e.stopPropagation();
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+    setEdges((eds) =>
+      eds.filter((edge) => edge.source !== id && edge.target !== id)
+    );
+  };
+
   return (
     <div
       className={`bg-white rounded-md border-2 ${borderClass} shadow-md w-60`}
     >
-      <div className="flex items-center gap-2 p-2 border-b border-slate-200 bg-slate-50 rounded-t-md">
-        {icon}
-        <div className="font-bold text-sm">{data.label}</div>
+      <div className="flex items-center justify-between p-2 border-b border-slate-200 bg-slate-50 rounded-t-md">
+        <div className="flex items-center gap-2">
+          {icon}
+          <div className="font-bold text-sm">{data.label}</div>
+        </div>
+        <button
+          onClick={onDelete}
+          className="text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition-colors"
+          title="Delete node"
+        >
+          <X size={14} />
+        </button>
       </div>
 
       <div className="p-3 text-xs text-slate-500">

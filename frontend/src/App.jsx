@@ -126,6 +126,26 @@ export default function App() {
     [setNodes, selectedNode]
   );
 
+  const deleteNode = useCallback(
+    (nodeId) => {
+      setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+      setEdges((eds) =>
+        eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+      );
+      if (selectedNode && selectedNode.id === nodeId) {
+        setSelectedNode(null);
+      }
+    },
+    [setNodes, setEdges, selectedNode]
+  );
+
+  const deleteEdge = useCallback(
+    (edgeId) => {
+      setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+    },
+    [setEdges]
+  );
+
   const handleSave = async () => {
     if (!isConnected) {
       alert("Please connect your wallet to save the workflow.");
@@ -264,6 +284,8 @@ export default function App() {
               onConnect={onConnect}
               onNodeClick={onNodeClick}
               onPaneClick={onPaneClick}
+              onDeleteNode={deleteNode}
+              onDeleteEdge={deleteEdge}
               onInit={setReactFlowInstance}
             />
           </main>

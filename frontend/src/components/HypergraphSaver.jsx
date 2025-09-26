@@ -1,7 +1,11 @@
 //src/components/HypergraphSaver.jsx
 
-import { useState , useEffect} from "react";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useState, useEffect } from "react";
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { Graph, Ipfs } from "@graphprotocol/grc-20";
 import { UploadCloud, Loader2 } from "lucide-react";
 
@@ -12,16 +16,6 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
-  });
-
-  console.log("HypergraphSaver - Debug info:", {
-    isConnected,
-    address,
-    isSaving,
-    preparingTx,
-    isPending,
-    isConfirming,
-    isSuccess,
   });
 
   const handleSaveToHypergraph = async () => {
@@ -75,19 +69,19 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
         {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ cid }),
         }
       );
-      
+
       if (!result.ok) {
         throw new Error(`HTTP error! status: ${result.status}`);
       }
-      
+
       const { to, data } = await result.json();
       console.log("Transaction data received.");
-      
+
       setPreparingTx(false);
 
       // Step 5: Send the transaction using writeContract
@@ -97,7 +91,6 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
         data: data,
         value: 0n,
       });
-
     } catch (error) {
       console.error("Failed to save to Hypergraph:", error);
       alert(`Error: ${error.message}`);
@@ -133,7 +126,7 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
       disabled={isButtonDisabled()}
       className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 flex items-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed"
     >
-      {(isSaving || preparingTx || isPending || isConfirming) ? (
+      {isSaving || preparingTx || isPending || isConfirming ? (
         <Loader2 className="animate-spin" size={16} />
       ) : (
         <UploadCloud size={16} />
