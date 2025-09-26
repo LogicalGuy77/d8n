@@ -1,7 +1,7 @@
 // src/components/HypergraphSaver.jsx
 
 import { useState } from "react";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount, useWalletClient, useConnectorClient } from "wagmi";
 // The new, correct imports based on the latest documentation
 import { Graph, Ipfs } from "@graphprotocol/grc-20";
 import { UploadCloud, Loader2 } from "lucide-react";
@@ -10,13 +10,19 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
   const [isSaving, setIsSaving] = useState(false);
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { data: connectorClient } = useConnectorClient();
+
+  // Use fallback client if walletClient is not available
+  const client = walletClient || connectorClient;
 
   // Debug logging to help identify the issue
   console.log("HypergraphSaver - Debug info:", {
     isConnected,
     hasWalletClient: !!walletClient,
+    hasConnectorClient: !!connectorClient,
+    hasClient: !!client,
     address,
-    walletClientStatus: walletClient ? "available" : "not available",
+    clientStatus: client ? "available" : "not available",
   });
 
   const handleSaveToHypergraph = async () => {
@@ -25,7 +31,7 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
       return;
     }
 
-    if (!walletClient) {
+    if (!client) {
       alert("Wallet client not ready. Please wait a moment and try again.");
       return;
     }
@@ -83,9 +89,9 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
       // Step 5: Send the transaction using the user's wallet.
       // This will trigger a signature request in MetaMask.
       console.log("Step 5/5: Sending transaction...");
-      const txResult = await walletClient.sendTransaction({
+      const txResult = await client.sendTransaction({
         // @ts-expect-error - viem account type mismatch is a known issue with the SDK
-        account: walletClient.account,
+        account: client.account,
         to: to,
         data: data,
       });
@@ -103,14 +109,14 @@ export default function HypergraphSaver({ workflowName, nodes, edges }) {
   const getButtonText = () => {
     if (isSaving) return "Saving...";
     if (!isConnected) return "Connect Wallet First";
-    if (!walletClient) return "Wallet Loading...";
+    if (!client) return "Wallet Loading...";
     return "Save to Hypergraph";
   };
 
   return (
     <button
       onClick={handleSaveToHypergraph}
-      disabled={isSaving || !isConnected || !walletClient}
+      disabled={isSaving || !isConnected || !client}
       className="bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 flex items-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed"
     >
       {isSaving ? (
