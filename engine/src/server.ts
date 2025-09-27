@@ -20,7 +20,22 @@ app.use(
 app.use(express.json());
 
 app.get("/status", (req, res) => {
-  res.status(200).json({ status: "Running" });
+  const walletaddr = req.query.wallet as string;
+  // console.log(`[STATUS] Request received for wallet: ${walletaddr}`);
+
+  if (!walletaddr) {
+    // console.log(`[STATUS] No wallet address provided`);
+    return res.status(400).json({ error: "Wallet address is required" });
+  }
+
+  if (user_workflows[walletaddr]) {
+    const currentStatus = user_workflows[walletaddr].status;
+    // console.log(`[STATUS] Wallet ${walletaddr} - Current executing node: ${currentStatus || 'none'}`);
+    res.status(200).json({ currentNode: currentStatus });
+  } else {
+    // console.log(`[STATUS] No workflow found for wallet: ${walletaddr}`);
+    res.status(404).json({ currentNode: null });
+  }
 });
 
 app.post("/workflow", async (req, res) => {
@@ -35,24 +50,35 @@ app.post("/workflow", async (req, res) => {
 
 app.post("/status", (req, res) => {
   const { walletaddr } = req.body;
-  if(user_workflows[walletaddr]){
-    res.status(200).json({status: user_workflows[walletaddr].status});
-  }
-  else{
-    res.status(400).json({status: "No workflow for this wallet address found"});
+  // console.log(`[STATUS POST] Request received for wallet: ${walletaddr}`);
+
+  if (user_workflows[walletaddr]) {
+    const currentStatus = user_workflows[walletaddr].status;
+    // console.log(
+    // `[STATUS POST] Wallet ${walletaddr} - Current executing node: ${
+    //   currentStatus || "none"
+    // }`
+    // );
+    res.status(200).json({ status: currentStatus });
+  } else {
+    console.log(`[STATUS POST] No workflow found for wallet: ${walletaddr}`);
+    res
+      .status(400)
+      .json({ status: "No workflow for this wallet address found" });
   }
 });
 
 app.post("/stop", (req, res) => {
-  const { walletaddr} = req.body;
-  if(user_workflows[walletaddr]){
+  const { walletaddr } = req.body;
+  if (user_workflows[walletaddr]) {
     user_workflows[walletaddr].type = "once";
-    res.status(200).json({result: "Workflow will stop after this run"});
+    res.status(200).json({ result: "Workflow will stop after this run" });
+  } else {
+    res
+      .status(400)
+      .json({ result: "No workflow for this wallet address found" });
   }
-  else{
-    res.status(400).json({result: "No workflow for this wallet address found"});
-  }
-})
+});
 
 app.listen(port, () => {
   console.log(`Starting engine on port ${port}`);

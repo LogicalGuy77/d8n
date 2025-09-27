@@ -14,8 +14,20 @@ export default function WorkflowCanvas(props) {
     onDeleteNode,
     onDeleteEdge,
     onInit,
+    currentExecutingNode,
   } = props;
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
+  
+  // Enhance nodes with execution status
+  const enhancedNodes = useMemo(() => {
+    return nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        isExecuting: currentExecutingNode === node.id
+      }
+    }));
+  }, [nodes, currentExecutingNode]);
 
   // Handle keyboard delete
   const onNodesDelete = useCallback(
@@ -39,7 +51,7 @@ export default function WorkflowCanvas(props) {
   return (
     <div className="flex-grow h-full">
       <ReactFlow
-        nodes={nodes}
+        nodes={enhancedNodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}

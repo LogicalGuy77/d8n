@@ -1,6 +1,7 @@
 // src/App.jsx
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import confetti from "canvas-confetti";
 import {
   ReactFlowProvider,
   useNodesState,
@@ -22,6 +23,7 @@ import { NODE_CONFIG } from "./config/nodeConfig";
 
 // Import custom hooks
 import { useWorkflowExecution } from "./hooks/useWorkflowExecution";
+import { useNodeStatus } from "./hooks/useNodeStatus";
 
 let id = 1;
 const getId = () => `${id++}`;
@@ -68,6 +70,45 @@ export default function App() {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { address, isConnected } = useAccount();
   const { executeWorkflow } = useWorkflowExecution();
+  const { currentExecutingNode, workflowCompleted } = useNodeStatus(address);
+
+  // Trigger confetti when workflow completes
+  useEffect(() => {
+    if (workflowCompleted) {
+      console.log("🎉 Workflow completed! Triggering confetti...");
+      
+      // Create a spectacular confetti effect
+      const duration = 3000; // 3 seconds
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        // Multiple bursts from different positions
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        });
+      }, 250);
+    }
+  }, [workflowCompleted]);
 
   const onConnect = useCallback(
     (params) => {
@@ -339,6 +380,7 @@ export default function App() {
               onDeleteNode={deleteNode}
               onDeleteEdge={deleteEdge}
               onInit={setReactFlowInstance}
+              currentExecutingNode={currentExecutingNode}
             />
           </main>
           {selectedNode && (
