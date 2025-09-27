@@ -5,6 +5,7 @@ export class Workflow {
     type: string = "";
     nodes: Record<string, Node> = {};
     edges: Edges;
+    status: string = "";
 
     constructor(type: string, nodes: Record<string, Node>, edges: Edges) {
         if(type === "once" || type === "repeat") this.type = type;
@@ -43,6 +44,7 @@ export class Workflow {
 
             // Execute the node
             await currentNode.execute();
+            this.status = currentNode.id;
 
             // Step 4: Wire outputs to downstream nodes
             if (this.edges[currentId]) {
@@ -78,6 +80,7 @@ export class Workflow {
                 }
             }
         }
+        this.status = "";
     }
 
     async start() {
