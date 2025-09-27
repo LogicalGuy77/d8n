@@ -1,11 +1,15 @@
 import React from "react";
 import { Handle, Position, useReactFlow } from "reactflow";
-import { Cloud, GitBranch, Repeat, Zap, X } from "lucide-react";
+import { Cloud, GitBranch, Repeat, Zap, X, Target, Wallet, Bug, Send } from "lucide-react";
 
 const icons = {
   "pyth-network": <Cloud size={16} />,
+  limitOrder: <Target size={16} />,
+  queryBalance: <Wallet size={16} />,
+  sendToken: <Send size={16} />,
   condition: <GitBranch size={16} />,
   swap: <Repeat size={16} />,
+  print: <Bug size={16} />,
   default: <Zap size={16} />,
 };
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { PYTH_SYMBOLS } from "../constants/pythSymbols";
-import { tokens } from "../constants/tokenMappings";
+import { tokens, base_tokens } from "../constants/tokenMappings";
 
 export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
   if (!node) return null;
@@ -76,6 +76,117 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               className="p-2 border rounded"
               placeholder="e.g., price > 100000"
             />
+          </div>
+        );
+      case "limitOrder":
+        return (
+          <div className="flex flex-col gap-4">
+            <div>
+              <label htmlFor="makerToken" className="font-semibold">
+                Maker Token (Token you want to sell)
+              </label>
+              <select
+                id="makerToken"
+                name="makerToken"
+                value={node.data.node_data?.makerToken || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+              >
+                <option value="">Select Token</option>
+                {Object.entries(base_tokens).map(([symbol, token]) => (
+                  <option key={token.address} value={token.address}>
+                    {symbol} ({token.address.slice(0, 6)}...
+                    {token.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="takerToken" className="font-semibold">
+                Taker Token (Token you want to buy)
+              </label>
+              <select
+                id="takerToken"
+                name="takerToken"
+                value={node.data.node_data?.takerToken || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+              >
+                <option value="">Select Token</option>
+                {Object.entries(base_tokens).map(([symbol, token]) => (
+                  <option key={token.address} value={token.address}>
+                    {symbol} ({token.address.slice(0, 6)}...
+                    {token.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="makingAmount" className="font-semibold">
+                Making Amount (Amount to sell)
+              </label>
+              <input
+                id="makingAmount"
+                name="makingAmount"
+                defaultValue={node.data.node_data?.makingAmount || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+                placeholder="e.g., 1000"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="takingAmount" className="font-semibold">
+                Taking Amount (Minimum amount to receive)
+              </label>
+              <input
+                id="takingAmount"
+                name="takingAmount"
+                defaultValue={node.data.node_data?.takingAmount || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+                placeholder="e.g., 900"
+                required
+              />
+            </div>
+          </div>
+        );
+      case "queryBalance":
+        return (
+          <div className="flex flex-col gap-4">
+            <div>
+              <label htmlFor="tokenAddress" className="font-semibold">
+                Token Address
+              </label>
+              <select
+                id="tokenAddress"
+                name="tokenAddress"
+                value={node.data.node_data?.tokenAddress || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+              >
+                <option value="">Native ETH</option>
+                {Object.entries(tokens).map(([symbol, token]) => (
+                  <option key={token.address} value={token.address}>
+                    {symbol} ({token.address.slice(0, 6)}...
+                    {token.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="walletAddress" className="font-semibold">
+                Wallet Address
+              </label>
+              <input
+                id="walletAddress"
+                name="walletAddress"
+                defaultValue={node.data.node_data?.walletAddress || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+                placeholder="0x... (leave empty to use connected wallet)"
+              />
+            </div>
           </div>
         );
       case "swap":
@@ -208,6 +319,22 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
                 required
               />
             </div>
+          </div>
+        );
+      case "print":
+        return (
+          <div className="flex flex-col gap-2">
+            <label htmlFor="sample" className="font-semibold">
+              Sample Data
+            </label>
+            <input
+              id="sample"
+              name="sample"
+              defaultValue={node.data.node_data?.sample || "sample"}
+              onChange={handleInputChange}
+              className="p-2 border rounded w-full mt-1"
+              placeholder="Debug message or sample data"
+            />
           </div>
         );
       default:
