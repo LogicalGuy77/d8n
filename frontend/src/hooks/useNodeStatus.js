@@ -11,14 +11,14 @@ export function useNodeStatus(walletAddress) {
     if (!walletAddress) return;
 
     try {
-      console.log(`[FRONTEND] Polling status for wallet: ${walletAddress}`);
+      // console.log(`[FRONTEND] Polling status for wallet: ${walletAddress}`);
       const response = await fetch(
         `http://localhost:3000/status?wallet=${walletAddress}`
       );
 
       if (response.ok) {
         const data = await response.json();
-        console.log(`[FRONTEND] Status response:`, data);
+        // console.log(`[FRONTEND] Status response:`, data);
 
         // The backend now returns { currentNode: "nodeId" } or { currentNode: null }
         const nodeId = data.currentNode;

@@ -13,6 +13,7 @@ import WorkflowCanvas from "./components/WorkflowCanvas";
 import SettingsPanel from "./components/SettingsPanel";
 import ViewWorkflows from "./components/ViewWorkflows";
 import HypergraphSaver from "./components/HypergraphSaver";
+import HypergraphQuerier from "./components/HypergraphQuerier";
 
 // Import wagmi hooks
 import { useAccount, useConnect, useDisconnect } from "wagmi";
@@ -346,8 +347,8 @@ export default function App() {
             placeholder="Workflow Name"
           />
           <div className="flex items-center gap-4">
-            <ViewWorkflows onLoadWorkflow={loadWorkflow} />{" "}
-            {/* <-- ADD COMPONENT */}
+            <ViewWorkflows onLoadWorkflow={loadWorkflow} />
+            <HypergraphQuerier />
             <HypergraphSaver
               workflowName={workflowName}
               nodes={nodes}
