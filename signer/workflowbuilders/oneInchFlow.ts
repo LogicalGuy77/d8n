@@ -78,28 +78,28 @@ export async function buildWorkflowForSwap(params: {
   };
 
   // 2. Swap Action (via 1inch API)
-  const swapUrl = `https://api.1inch.dev/swap/v6.1/${chainId}/swap`;
-  const swapResponse = await axios.get(swapUrl, {
-    params: {
-      fromTokenAddress: fromToken,
-      toTokenAddress: toToken,
-      amount: amount.toString(),
-      fromAddress: delegateAddress,
-      slippage
-    },
-    headers: { Authorization: `Bearer ${apiKey}` }
-  });
+  // const swapUrl = `https://api.1inch.dev/swap/v6.1/${chainId}/swap`;
+  // const swapResponse = await axios.get(swapUrl, {
+  //   params: {
+  //     fromTokenAddress: fromToken,
+  //     toTokenAddress: toToken,
+  //     amount: amount.toString(),
+  //     fromAddress: delegateAddress,
+  //     slippage
+  //   },
+  //   headers: { Authorization: `Bearer ${apiKey}` }
+  // });
 
-  const swapTx = swapResponse.data.tx;
-  const swapAction: WorkflowAction = {
-    to: swapTx.to,
-    value: BigInt(swapTx.value),
-    data: swapTx.data
-  };
+  // const swapTx = swapResponse.data.tx;
+  // const swapAction: WorkflowAction = {
+  //   to: swapTx.to,
+  //   value: BigInt(swapTx.value),
+  //   data: swapTx.data
+  // };
 
   // Return workflow
   return {
-    actions: [approveAction, swapAction]
+    actions: [approveAction]
   };
 }
 
