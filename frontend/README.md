@@ -1,16 +1,29 @@
-# React + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the frontend application for the d8n project. It provides the user interface for interacting with workflows, nodes, and smart contracts.
 
-Currently, two official plugins are available:
+## Structure
+- `src/`: React source files and components.
+  - `components/`: UI components for workflow and node management.
+  - `hooks/`: Custom React hooks.
+  - `constants/`: Constant values and mappings.
+  - `config/`: Configuration files.
+  - `abis/`: Contract ABIs for frontend interaction.
+- `public/`: Static assets.
+- `index.html`: Main HTML file.
+- `package.json`: Node.js dependencies and scripts.
+- `vite.config.js`: Vite configuration for development.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-## React Compiler
-
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Notes
+- Built with React and Vite.
+- Customize components in `src/components` as needed.
