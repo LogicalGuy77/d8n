@@ -4,7 +4,7 @@
   "description": "Signer",
   "main": "index.js",
   "scripts": {
-    "test": "tsx ./example/oneinchSigner.example.ts"
+    "test": "tsx ./example/uniswapSwapWorkflow.example.ts"
   },
   "keywords": [],
   "author": "",
