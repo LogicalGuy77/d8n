@@ -1,11 +1,12 @@
+import { tokens } from "./tokenMappings";
 /**
  * Template 1: Simple "Buy the Dip" Strategy
  * Description: Monitors the price of ETH/USD. If the price drops below a
  * specified target ($3,200), it executes a swap from a stablecoin (USDC) to ETH.
  */
 export const buyTheDipTemplate = {
-  name: "Buy The Dip (ETH)",
-  description: "Swaps USDC for ETH when the price drops below $3,200.",
+  name: "Buy The Dip (WETH)",
+  description: "Swaps USDC for WETH when the price drops below $3,200.",
   nodes: [
     {
       id: "pyth-1",
@@ -21,8 +22,8 @@ export const buyTheDipTemplate = {
       type: "condition",
       position: { x: 350, y: 150 },
       data: {
-        label: "Price < $3,200?",
-        node_data: { condition: "price < 3200" },
+        label: "Price > $3,200?",
+        node_data: { condition: "price > 3200" },
       },
     },
     {
@@ -30,14 +31,12 @@ export const buyTheDipTemplate = {
       type: "swap",
       position: { x: 650, y: 100 },
       data: {
-        label: "Swap USDC to ETH",
+        label: "Swap USDC to WETH",
         node_data: {
-          symbol: "eth",
-          sender: "",
-          receiver: "",
-          from: "USDC",
-          to: "ETH",
-          amount: "1000",
+          tokenIn: tokens.USDC.address,
+          tokenOut: tokens.WETH.address,
+          amountIn: "1000000", // 10 USDC with 6 decimals
+          amountOutMin: "0",
         },
       },
     },
@@ -84,8 +83,8 @@ export const buyTheDipTemplate = {
  * specified target ($75,000), it executes a swap from BTC to a stablecoin (USDC).
  */
 export const takeProfitTemplate = {
-  name: "Take Profit (BTC)",
-  description: "Swaps BTC for USDC when the price goes above $75,000.",
+  name: "Take Profit (DAI)",
+  description: "Swaps USDC for DAI when the price goes above $75,000.",
   nodes: [
     {
       id: "pyth-1",
@@ -110,14 +109,12 @@ export const takeProfitTemplate = {
       type: "swap",
       position: { x: 650, y: 150 },
       data: {
-        label: "Swap BTC to USDC",
+        label: "Swap USDC to DAI",
         node_data: {
-          symbol: "btc",
-          sender: "",
-          receiver: "",
-          from: "BTC",
-          to: "USDC",
-          amount: "0.5",
+          tokenIn: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+          tokenOut: "0x7169D38820dfd117C3FA1f22a697dBA58d90BA06",
+          amountIn: "10000000",
+          amountOutMin: "0",
         },
       },
     },

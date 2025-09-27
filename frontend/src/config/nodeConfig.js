@@ -16,7 +16,12 @@ export const NODE_CONFIG = {
     label: "1inch Swap",
     inputs: { activate: { type: "bool" } },
     outputs: {},
-    node_data: { symbol: "btc", sender: "", receiver: "" },
+    node_data: {
+      tokenIn: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      tokenOut: "0x7169D38820dfd117C3FA1f22a697dBA58d90BA06",
+      amountIn: "10000000",
+      amountOutMin: "0",
+    },
   },
   print: {
     label: "Print Debug",

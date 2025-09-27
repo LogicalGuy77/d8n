@@ -1,17 +1,35 @@
 import React from "react";
 import { X } from "lucide-react";
 import { PYTH_SYMBOLS } from "../constants/pythSymbols";
+import { tokens } from "../constants/tokenMappings";
 
 export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
   if (!node) return null;
 
+  // Helper function to convert amount with decimals
+  const convertAmountWithDecimals = (amount, tokenAddress) => {
+    if (!amount || amount === "") return "0";
+    const token = Object.values(tokens).find((t) => t.address === tokenAddress);
+    const decimals = token ? token.decimal : 18; // default to 18 if token not found
+    const multiplier = Math.pow(10, decimals);
+    return (parseFloat(amount) * multiplier).toString();
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    let processedValue = value;
+
+    // Handle amount conversion for swap nodes
+    if (node.data.type === "swap" && name === "amountIn") {
+      const tokenInAddress = node.data.node_data?.tokenIn;
+      processedValue = convertAmountWithDecimals(value, tokenInAddress);
+    }
+
     const updatedData = {
       ...node.data,
       node_data: {
         ...node.data.node_data,
-        [name]: value,
+        [name]: processedValue,
       },
     };
     onUpdateNode(node.id, updatedData);
@@ -64,29 +82,77 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
         return (
           <div className="flex flex-col gap-4">
             <div>
-              <label htmlFor="symbol" className="font-semibold">
-                Symbol
+              <label htmlFor="tokenIn" className="font-semibold">
+                Token In
               </label>
-              <input
-                id="symbol"
-                name="symbol"
-                defaultValue={node.data.node_data?.symbol}
+              <select
+                id="tokenIn"
+                name="tokenIn"
+                value={node.data.node_data?.tokenIn || tokens.USDC.address}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
-                placeholder="e.g., btc"
+              >
+                {Object.entries(tokens).map(([symbol, token]) => (
+                  <option key={token.address} value={token.address}>
+                    {symbol} ({token.address.slice(0, 6)}...
+                    {token.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="tokenOut" className="font-semibold">
+                Token Out
+              </label>
+              <select
+                id="tokenOut"
+                name="tokenOut"
+                value={node.data.node_data?.tokenOut || tokens.USDT.address}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+              >
+                {Object.entries(tokens).map(([symbol, token]) => (
+                  <option key={token.address} value={token.address}>
+                    {symbol} ({token.address.slice(0, 6)}...
+                    {token.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="amountIn" className="font-semibold">
+                Amount In (will be converted with decimals)
+              </label>
+              <input
+                id="amountIn"
+                name="amountIn"
+                type="number"
+                step="any"
+                defaultValue={(() => {
+                  const currentAmount = node.data.node_data?.amountIn || "0";
+                  const tokenInAddress = node.data.node_data?.tokenIn;
+                  const token = Object.values(tokens).find(
+                    (t) => t.address === tokenInAddress
+                  );
+                  const decimals = token ? token.decimal : 18;
+                  return parseFloat(currentAmount) / Math.pow(10, decimals);
+                })()}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+                placeholder="e.g., 1000"
               />
             </div>
             <div>
-              <label htmlFor="sender" className="font-semibold">
-                Sender
+              <label htmlFor="amountOutMin" className="font-semibold">
+                Minimum Amount Out (raw value)
               </label>
               <input
-                id="sender"
-                name="sender"
-                defaultValue={node.data.node_data?.sender}
+                id="amountOutMin"
+                name="amountOutMin"
+                defaultValue={node.data.node_data?.amountOutMin || "0"}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
-                placeholder="Your wallet address"
+                placeholder="e.g., 0"
               />
             </div>
           </div>
