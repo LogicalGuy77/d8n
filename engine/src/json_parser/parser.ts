@@ -32,6 +32,7 @@ export function parse_workflow(json_workflow: WorkflowSchema) {
         break;
       case "swap":
         nodes[id] = new UniswapNode(id, schema.label, nodeData.tokenIn, nodeData.tokenOut, BigInt(nodeData.amountIn), BigInt(nodeData.amountOutMin));
+        break;
       default:
         console.warn(`Unknown node type: ${schema.type} at node ${id}`);
     }
