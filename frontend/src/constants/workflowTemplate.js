@@ -229,5 +229,19 @@ export const priceRangeAlertTemplate = {
       targetHandle: "test",
       label: "True",
     },
+    {
+      id: "e1-ph",
+      source: "pyth-1",
+      target: "print-high",
+      sourceHandle: "price",
+      targetHandle: "test",
+    },
+    {
+      id: "e1-pl",
+      source: "pyth-1",
+      target: "print-low",
+      sourceHandle: "price",
+      targetHandle: "test",
+    },
   ],
 };

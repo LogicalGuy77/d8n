@@ -70,8 +70,21 @@ export default function App() {
   const { executeWorkflow } = useWorkflowExecution();
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    (params) => {
+      const sourceNode = nodes.find((node) => node.id === params.source);
+      let edgeParams = { ...params };
+
+      if (sourceNode && sourceNode.data.type === "condition") {
+        if (params.sourceHandle === "true-path") {
+          edgeParams.label = "True";
+        } else if (params.sourceHandle === "false-path") {
+          edgeParams.label = "False";
+        }
+      }
+
+      setEdges((eds) => addEdge(edgeParams, eds));
+    },
+    [nodes, setEdges]
   );
 
   const onNodeClick = useCallback((event, node) => {
