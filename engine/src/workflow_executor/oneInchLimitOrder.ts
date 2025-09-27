@@ -1,5 +1,13 @@
 //@ts-nocheck
-import { Wallet, JsonRpcProvider, Contract, MaxUint256 } from "ethers"; 
+import { 
+  createPublicClient, 
+  createWalletClient, 
+  http, 
+  parseAbi, 
+  maxUint256,
+  type Address as ViemAddress 
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import {
   Sdk,
   MakerTraits,
@@ -10,10 +18,10 @@ import {
 } from "@1inch/limit-order-sdk";
 
 // ERC-20 minimal ABI
-const erc20AbiFragment = [
-  "function approve(address spender, uint256 amount) external returns (bool)",
-  "function allowance(address owner, address spender) external view returns (uint256)",
-];
+const erc20Abi = parseAbi([
+  'function approve(address spender, uint256 amount) external returns (bool)',
+  'function allowance(address owner, address spender) external view returns (uint256)',
+]);
 
 /**
  * Approve + Create + Submit Limit Order (1inch v4)
@@ -41,25 +49,40 @@ export async function buildWorkflowForLimitOrder(params: {
     expiresInSeconds = 300, // default 5 mins
   } = params;
 
-  // 1️⃣ Wallet + Provider
-  const provider = new JsonRpcProvider(rpcUrl);
-  const wallet = new Wallet(makerPrivateKey, provider);
+  // 1️⃣ Create account and clients
+  const account = privateKeyToAccount(makerPrivateKey as `0x${string}`);
+  
+  const publicClient = createPublicClient({
+    transport: http(rpcUrl),
+  });
+
+  const walletClient = createWalletClient({
+    account,
+    transport: http(rpcUrl),
+  });
 
   // 2️⃣ LimitOrder contract address
   const domain = getLimitOrderV4Domain(chainId);
   const limitOrderContractAddress = domain.verifyingContract;
 
   // 3️⃣ Approve token if needed
-  const makerAssetContract = new Contract(makerToken, erc20AbiFragment, wallet);
-  const currentAllowance = await makerAssetContract.allowance(
-    wallet.address,
-    limitOrderContractAddress,
-  );
+  const currentAllowance = await publicClient.readContract({
+    address: makerToken as ViemAddress,
+    abi: erc20Abi,
+    functionName: 'allowance',
+    args: [account.address, limitOrderContractAddress as ViemAddress],
+  });
 
   if (currentAllowance < makingAmount) {
     console.log("Approving token allowance...");
-    const tx = await makerAssetContract.approve(limitOrderContractAddress, MaxUint256);
-    await tx.wait();
+    const hash = await walletClient.writeContract({
+      address: makerToken as ViemAddress,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [limitOrderContractAddress as ViemAddress, maxUint256],
+    });
+    
+    await publicClient.waitForTransactionReceipt({ hash });
     console.log("✅ Approval successful");
   }
 
@@ -88,18 +111,19 @@ export async function buildWorkflowForLimitOrder(params: {
       takerAsset: new Address(takerToken),
       makingAmount,
       takingAmount,
-      maker: new Address(wallet.address),
+      maker: new Address(account.address),
     },
     makerTraits,
   );
 
   // 7️⃣ Sign EIP-712
   const typedData = order.getTypedData(chainId);
-  const signature = await wallet.signTypedData(
-    typedData.domain,
-    { Order: typedData.types[typedData.primaryType] },
-    typedData.message,
-  );
+  const signature = await walletClient.signTypedData({
+    domain: typedData.domain,
+    types: { Order: typedData.types[typedData.primaryType] },
+    primaryType: typedData.primaryType,
+    message: typedData.message,
+  });
 
   // 8️⃣ Submit to 1inch Orderbook
   try {

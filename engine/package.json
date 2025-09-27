@@ -6,6 +6,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@1inch/limit-order-sdk": "^5.2.0",
     "@pythnetwork/hermes-client": "^2.0.0",
     "@pythnetwork/pyth-sdk-solidity": "^4.2.0",
     "@types/cors": "^2.8.19",
@@ -21,6 +22,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "prod": "node ./dist/server.js"
+    "prod": "node ./dist/server.js",
+    "test": "tsx ./src/server.ts"
   }
 }
