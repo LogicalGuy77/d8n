@@ -1,12 +1,13 @@
 // example/uniswapSwapWorkflow.example.ts
+//@ts-nocheck
 import "dotenv/config";
 import { uniswapV2Swap } from "../workflowbuilders/uniswapSwapWorkflow";
-import { sepolia } from "viem/chains";
+import { sepolia , base } from "viem/chains";
 
 (async () => {
   const tx = await uniswapV2Swap({
     privateKey: process.env.USER_PRIVATE_KEY as string,
-    chain: sepolia,
+    chain: base,
     rpcUrl: process.env.SEPOLIA_RPC_URL as string,
     routerAddress: "0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3", // make sure this is a V2-style router
     tokenIn: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",  // USDC (example)
