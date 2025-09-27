@@ -234,6 +234,48 @@ export default function App() {
     [setNodes, setEdges, reactFlowInstance]
   );
 
+  const loadTemplate = useCallback(
+    (template) => {
+      // Convert template format to the format expected by the canvas
+      const nodesToLoad = template.nodes.map((templateNode) => {
+        const config = NODE_CONFIG[templateNode.type];
+        return {
+          id: templateNode.id,
+          position: templateNode.position,
+          type: "custom",
+          data: {
+            type: templateNode.type,
+            label: templateNode.data.label,
+            node_data: templateNode.data.node_data,
+            inputs: config?.inputs || {},
+            outputs: config?.outputs || {},
+          },
+        };
+      });
+
+      const edgesToLoad = template.edges.map((templateEdge) => ({
+        id: templateEdge.id,
+        source: templateEdge.source,
+        target: templateEdge.target,
+        sourceHandle: templateEdge.sourceHandle,
+        targetHandle: templateEdge.targetHandle,
+        label: templateEdge.label,
+      }));
+
+      setWorkflowName(template.name);
+      setNodes(nodesToLoad);
+      setEdges(edgesToLoad);
+
+      // Fit view to show the loaded template
+      setTimeout(() => {
+        if (reactFlowInstance) {
+          reactFlowInstance.fitView();
+        }
+      }, 100);
+    },
+    [setNodes, setEdges, reactFlowInstance]
+  );
+
   return (
     <ReactFlowProvider>
       <div className="flex flex-col h-screen font-sans">
@@ -266,6 +308,7 @@ export default function App() {
           <Sidebar
             onAddNode={addNode}
             onExecuteWorkflow={handleExecuteWorkflow}
+            onLoadTemplate={loadTemplate}
           />
           <main className="flex-grow relative">
             <WorkflowCanvas
