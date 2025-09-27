@@ -42,7 +42,7 @@ async function main() {
   const myWorkflow: Workflow = {
     actions: [
       {
-        to: USDT_ADDRESS_AMOY,
+        to: USDC_ADDRESS_SEPOLIA,
         value: 0n,
         data: encodeFunctionData({
           abi: erc20Abi,
