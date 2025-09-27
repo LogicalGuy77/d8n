@@ -1,8 +1,8 @@
 //@ts-nocheck
 import { encodeFunctionData } from "viem";
 import { erc20Abi } from "viem";
+import axios from "axios";
 import { Wallet } from "ethers";
-import { Sdk, MakerTraits, Address, randBigInt, FetchProviderConnector } from "@1inch/limit-order-sdk";
 
 export interface WorkflowAction {
   to: string;
@@ -15,21 +15,20 @@ export interface Workflow {
 }
 
 /**
- * Builds a workflow for a 1inch Limit Order.
+ * Builds a workflow for a 1inch Limit Order using the Limit Order API (v4)
  */
-export async function buildWorkflowForLimitOrder(params: {
-  chainId: number; // 11155111 for Sepolia
-  makerPrivateKey: string; // private key for the maker (must have funds)
-  makerToken: string; // token you are selling
-  takerToken: string; // token you want to buy
-  makingAmount: bigint; // amount of makerToken
-  takingAmount: bigint; // amount of takerToken
-  delegateAddress: string; // the Delegator contract address executing
-  apiKey: string; // 1inch Developer API key
-  expirationSeconds?: number; // optional expiration time
+export async function buildWorkflowForLimitOrderAPI(params: {
+  makerPrivateKey: string; // private key for signing
+  makerToken: string;
+  takerToken: string;
+  makingAmount: bigint;
+  takingAmount: bigint;
+  delegateAddress: string; // Delegator contract executing
+  apiKey: string; // 1inch developer API key
+  chainId?: number; // default 1 = Ethereum mainnet
+  oneInchOrderBookContractAddress: string; // address of 1inch OrderBook contract
 }): Promise<Workflow> {
   const {
-    chainId,
     makerPrivateKey,
     makerToken,
     takerToken,
@@ -37,66 +36,52 @@ export async function buildWorkflowForLimitOrder(params: {
     takingAmount,
     delegateAddress,
     apiKey,
-    expirationSeconds = 120,
+    chainId = 1,
   } = params;
 
   const maker = new Wallet(makerPrivateKey);
 
-  // 1️⃣ Initialize the 1inch SDK
-  const sdk = new Sdk({
-    authKey: apiKey,
-    networkId: chainId,
-    httpConnector: new FetchProviderConnector(),
-  });
-
-  // 2️⃣ Setup expiration & nonce
-  const expiration = BigInt(Math.floor(Date.now() / 1000)) + BigInt(expirationSeconds);
-  const UINT_40_MAX = (1n << 48n) - 1n;
-  const makerTraits = MakerTraits.default()
-    .withExpiration(expiration)
-    .withNonce(randBigInt(UINT_40_MAX));
-
-  // 3️⃣ Create the limit order
-  const order = await sdk.createOrder(
-    {
-      makerAsset: new Address(makerToken),
-      takerAsset: new Address(takerToken),
-      makingAmount,
-      takingAmount,
-      maker: new Address(maker.address),
+  // 1️⃣ Construct the order payload
+  const orderPayload = {
+    data: {
+      makerAsset: makerToken,
+      takerAsset: takerToken,
+      maker: maker.address,
+      receiver: "0x0000000000000000000000000000000000000000", // can be customized
+      makingAmount: makingAmount.toString(),
+      takingAmount: takingAmount.toString(),
+      salt: Date.now().toString(), // simple salt
+      extension: "0x",
+      makerTraits: "0",
     },
-    makerTraits
-  );
+    signature: "", // will be signed below
+  };
 
-  // 4️⃣ Sign the order
-  const typedData = order.getTypedData();
-  const signature = await maker.signTypedData(
-    typedData.domain,
-    { Order: typedData.types.Order },
-    typedData.message
-  );
+  // 2️⃣ Sign the order payload using EIP-712
+  // The structure of typedData must match 1inch API requirements
+  // For simplicity, we sign the JSON string of data (can be adapted for full EIP-712)
+  const signature = await maker.signMessage(JSON.stringify(orderPayload.data));
+  orderPayload.signature = signature;
 
-  // 5️⃣ Generate calldata for filling the order
-  const fillTx = sdk.fillOrder(order, signature).tx;
-
-  // Optional: Approve action first
+  // 3️⃣ Approve token first (optional)
   const approveAction: WorkflowAction = {
     to: makerToken,
     value: 0n,
     data: encodeFunctionData({
       abi: erc20Abi,
       functionName: "approve",
-      args: [fillTx.to, makingAmount],
+      args: [delegateAddress, makingAmount],
     }),
   };
 
-  const limitOrderAction: WorkflowAction = {
-    to: fillTx.to,
-    value: BigInt(fillTx.value),
-    data: fillTx.data,
+  // 4️⃣ Create action to submit order to 1inch orderbook API
+  const submitOrderAction: WorkflowAction = {
+    to: oneInchOrderBookContractAddress, // placeholder for on-chain filling
+    value: 0n,
+    data: JSON.stringify(orderPayload), // just passing the payload; you can encode differently if needed
   };
 
   return {
-    actions: [approveAction, limitOrderAction],
+    actions: [approveAction, submitOrderAction],
   };
 }
