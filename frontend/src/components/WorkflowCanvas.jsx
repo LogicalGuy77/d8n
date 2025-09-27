@@ -17,15 +17,15 @@ export default function WorkflowCanvas(props) {
     currentExecutingNode,
   } = props;
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
-  
+
   // Enhance nodes with execution status
   const enhancedNodes = useMemo(() => {
-    return nodes.map(node => ({
+    return nodes.map((node) => ({
       ...node,
       data: {
         ...node.data,
-        isExecuting: currentExecutingNode === node.id
-      }
+        isExecuting: currentExecutingNode === node.id,
+      },
     }));
   }, [nodes, currentExecutingNode]);
 

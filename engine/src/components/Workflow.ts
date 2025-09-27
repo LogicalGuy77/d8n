@@ -46,7 +46,9 @@ export class Workflow {
 
       // Execute the node
       this.status = currentNode.id;
-      console.log(`[WORKFLOW] Now executing node: ${currentNode.id} (type: ${currentNode.type})`);
+      // console.log(
+      //   `[WORKFLOW] Now executing node: ${currentNode.id} (type: ${currentNode.type})`
+      // );
       await currentNode.execute();
       console.log(`[WORKFLOW] Completed executing node: ${currentNode.id}`);
 

@@ -12,12 +12,12 @@ const icons = {
 function CustomNode({ data, isConnectable, selected, id }) {
   const { setNodes, setEdges } = useReactFlow();
   const icon = icons[data.type] || icons.default;
-  
+
   // Define border and background classes based on state
   let borderClass = "border-slate-300";
   let bgClass = "bg-white";
   let headerClass = "bg-slate-50";
-  
+
   if (data.isExecuting) {
     borderClass = "border-green-500 border-4 animate-pulse";
     bgClass = "bg-green-50";
@@ -46,14 +46,18 @@ function CustomNode({ data, isConnectable, selected, id }) {
     <div
       className={`${bgClass} rounded-md border-2 ${borderClass} shadow-md w-60`}
     >
-      <div className={`flex items-center justify-between p-2 border-b border-slate-200 ${headerClass} rounded-t-md`}>
+      <div
+        className={`flex items-center justify-between p-2 border-b border-slate-200 ${headerClass} rounded-t-md`}
+      >
         <div className="flex items-center gap-2">
           {icon}
           <div className="font-bold text-sm">{data.label}</div>
           {data.isExecuting && (
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-              <span className="text-xs text-green-600 font-semibold">Running</span>
+              <span className="text-xs text-green-600 font-semibold">
+                Running
+              </span>
             </div>
           )}
         </div>

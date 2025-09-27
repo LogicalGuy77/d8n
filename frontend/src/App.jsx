@@ -76,7 +76,7 @@ export default function App() {
   useEffect(() => {
     if (workflowCompleted) {
       console.log("🎉 Workflow completed! Triggering confetti...");
-      
+
       // Create a spectacular confetti effect
       const duration = 3000; // 3 seconds
       const animationEnd = Date.now() + duration;
@@ -86,7 +86,7 @@ export default function App() {
         return Math.random() * (max - min) + min;
       }
 
-      const interval = setInterval(function() {
+      const interval = setInterval(function () {
         const timeLeft = animationEnd - Date.now();
 
         if (timeLeft <= 0) {
@@ -99,12 +99,12 @@ export default function App() {
         confetti({
           ...defaults,
           particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
         });
         confetti({
           ...defaults,
           particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
         });
       }, 250);
     }
