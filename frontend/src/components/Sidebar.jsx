@@ -1,14 +1,14 @@
 import React from "react";
-import { Cloud, GitBranch, Repeat, Bug } from "lucide-react";
+import { Cloud, GitBranch, Repeat, Bug, Play } from "lucide-react";
 
 const nodeTypes = [
   { type: "pyth-network", label: "Pyth Price Feed", icon: <Cloud /> },
   { type: "condition", label: "Condition", icon: <GitBranch /> },
   { type: "swap", label: "1inch Swap", icon: <Repeat /> },
-  { type: "print", label: "Print", icon: <Bug/>}
+  { type: "print", label: "Print", icon: <Bug /> },
 ];
 
-export default function Sidebar({ onAddNode }) {
+export default function Sidebar({ onAddNode, onExecuteWorkflow }) {
   return (
     <aside className="w-64 bg-white p-4 border-r border-slate-200 flex flex-col gap-4">
       <h2 className="text-xl font-bold text-slate-700">Nodes</h2>
@@ -22,6 +22,19 @@ export default function Sidebar({ onAddNode }) {
           <span className="font-semibold text-slate-800">{node.label}</span>
         </button>
       ))}
+
+      <div className="border-t border-slate-200 pt-4 mt-4">
+        <h2 className="text-xl font-bold text-slate-700 mb-4">Actions</h2>
+        <button
+          onClick={onExecuteWorkflow}
+          className="flex items-center gap-3 p-3 w-full text-left bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-400 transition-colors duration-150"
+        >
+          <span className="text-green-500">
+            <Play />
+          </span>
+          <span className="font-semibold text-slate-800">Execute Workflow</span>
+        </button>
+      </div>
     </aside>
   );
 }

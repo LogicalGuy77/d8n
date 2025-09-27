@@ -1,5 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
+import { PYTH_SYMBOLS } from "../constants/pythSymbols";
 
 export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
   if (!node) return null;
@@ -8,8 +9,8 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
     const { name, value } = e.target;
     const updatedData = {
       ...node.data,
-      "node-data": {
-        ...node.data["node-data"],
+      node_data: {
+        ...node.data.node_data,
         [name]: value,
       },
     };
@@ -28,14 +29,19 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
             <label htmlFor="symbol" className="font-semibold">
               Symbol
             </label>
-            <input
+            <select
               id="symbol"
               name="symbol"
-              defaultValue={node.data["node-data"]?.symbol}
+              value={node.data.node_data?.symbol || "BTC_USD"}
               onChange={handleInputChange}
               className="p-2 border rounded"
-              placeholder="e.g., btc/usd"
-            />
+            >
+              {PYTH_SYMBOLS.map((symbol) => (
+                <option key={symbol.value} value={symbol.value}>
+                  {symbol.label}
+                </option>
+              ))}
+            </select>
           </div>
         );
       case "condition":
@@ -47,7 +53,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
             <input
               id="condition"
               name="condition"
-              defaultValue={node.data["node-data"]?.condition}
+              defaultValue={node.data.node_data?.condition}
               onChange={handleInputChange}
               className="p-2 border rounded"
               placeholder="e.g., price > 100000"
@@ -64,7 +70,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="symbol"
                 name="symbol"
-                defaultValue={node.data["node-data"]?.symbol}
+                defaultValue={node.data.node_data?.symbol}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="e.g., btc"
@@ -77,7 +83,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="sender"
                 name="sender"
-                defaultValue={node.data["node-data"]?.sender}
+                defaultValue={node.data.node_data?.sender}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="Your wallet address"

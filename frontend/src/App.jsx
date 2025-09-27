@@ -1,6 +1,6 @@
 // src/App.jsx
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import {
   ReactFlowProvider,
   useNodesState,
@@ -19,6 +19,9 @@ import { metaMask } from "wagmi/connectors";
 
 // Import node configuration
 import { NODE_CONFIG } from "./config/nodeConfig";
+
+// Import custom hooks
+import { useWorkflowExecution } from "./hooks/useWorkflowExecution";
 
 let id = 1;
 const getId = () => `${id++}`;
@@ -64,7 +67,7 @@ export default function App() {
   const [workflowName, setWorkflowName] = useState("My Arbitrage Workflow");
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { address, isConnected } = useAccount();
-  const reactFlowWrapper = useRef(null);
+  const { executeWorkflow } = useWorkflowExecution();
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -128,6 +131,10 @@ export default function App() {
     [setEdges]
   );
 
+  const handleExecuteWorkflow = useCallback(() => {
+    executeWorkflow(nodes, edges, workflowName);
+  }, [executeWorkflow, nodes, edges, workflowName]);
+
   const handleSave = async () => {
     if (!isConnected) {
       alert("Please connect your wallet to save the workflow.");
@@ -144,7 +151,7 @@ export default function App() {
         position: node.position,
         label: node.data.label,
         type: node.data.type,
-        "node-data": node.data["node-data"],
+        node_data: node.data.node_data,
         inputs: node.data.inputs,
         outputs: node.data.outputs,
       };
@@ -191,7 +198,7 @@ export default function App() {
           data: {
             label: nodeData.label,
             type: nodeData.type,
-            "node-data": nodeData["node-data"],
+            node_data: nodeData.node_data,
             inputs: nodeData.inputs,
             outputs: nodeData.outputs,
           },
@@ -256,7 +263,10 @@ export default function App() {
           </div>
         </header>
         <div className="flex flex-grow overflow-hidden">
-          <Sidebar onAddNode={addNode} />
+          <Sidebar
+            onAddNode={addNode}
+            onExecuteWorkflow={handleExecuteWorkflow}
+          />
           <main className="flex-grow relative">
             <WorkflowCanvas
               nodes={nodes}

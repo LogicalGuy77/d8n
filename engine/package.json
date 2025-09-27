@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "@pythnetwork/hermes-client": "^2.0.0",
+    "@types/cors": "^2.8.19",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "expr-eval": "^2.0.2",
     "express": "^5.1.0",
