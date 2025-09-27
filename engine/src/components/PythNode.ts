@@ -80,7 +80,7 @@ export class PythNode implements Node {
             Math.pow(10, priceFeedUpdate.price.expo);
           this.outputs.price = price;
 
-          await this.simulateTransaction("0x" + priceUpdates.binary.data[0]);
+          this.simulateTransaction("0x" + priceUpdates.binary.data[0]);
         }
       } else {
         this.outputs.price = NaN;
