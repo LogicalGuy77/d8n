@@ -145,8 +145,12 @@ export default function App() {
   );
 
   const handleExecuteWorkflow = useCallback(() => {
-    executeWorkflow(nodes, edges, workflowName);
-  }, [executeWorkflow, nodes, edges, workflowName]);
+    if (!isConnected) {
+      alert("Please connect your wallet to execute the workflow.");
+      return;
+    }
+    executeWorkflow(nodes, edges, workflowName, address);
+  }, [executeWorkflow, nodes, edges, workflowName, address, isConnected]);
 
   const handleSave = async () => {
     if (!isConnected) {
