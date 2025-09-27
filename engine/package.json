@@ -9,13 +9,15 @@
     "@pythnetwork/hermes-client": "^2.0.0",
     "@pythnetwork/pyth-sdk-solidity": "^4.2.0",
     "@types/cors": "^2.8.19",
+    "axios": "^1.12.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "ethers": "5.7.2",
     "expr-eval": "^2.0.2",
     "express": "^5.1.0",
     "mongodb": "^6.20.0",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "viem": "^2.37.8"
   },
   "scripts": {
     "build": "tsc",
