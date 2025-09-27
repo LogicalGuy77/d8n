@@ -4,7 +4,7 @@
   "description": "Signer",
   "main": "index.js",
   "scripts": {
-    "test": "tsx ./example/uniswapSwapWorkflow.example.ts"
+    "test": "tsx ./workflowbuilders/assetSender.ts"
   },
   "keywords": [],
   "author": "",
