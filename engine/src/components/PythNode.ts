@@ -9,7 +9,7 @@ dotenv.config();
 
 const CONTRACT_ADDRESS: string = process.env.PYTH_UPDATE_CONTRACT_ADDRESS || "";
 const PRIVATE_KEY: string = process.env.PRIVATE_KEY || "";
-const RPC_URL: string = process.env.PYTH_UPDATE_RPC_URL || "";
+const RPC_URL: string = process.env.RPC_URL || "";
 
 export class PythNode implements Node {
   id: string;

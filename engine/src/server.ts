@@ -21,7 +21,7 @@ app.get("/status", (req, res) => {
   res.status(200).json({ status: "Running" });
 });
 
-app.post("/test", async (req, res) => {
+app.post("/workflow", async (req, res) => {
   const { json_workflow } = req.body;
   console.log("Received workflow:", JSON.stringify(json_workflow));
   const constructed_workflow: Workflow = parse_workflow(json_workflow);
