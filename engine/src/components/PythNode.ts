@@ -1,6 +1,15 @@
 import type { Node } from "../interfaces/Node.js";
 import { PythIds } from "../constants/PythIds.js";
 import { HermesClient } from "@pythnetwork/hermes-client";
+import { ethers } from "ethers";
+import PythAbi from '@pythnetwork/pyth-sdk-solidity/abis/IPyth.json' with { type: 'json' };
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const CONTRACT_ADDRESS: string = process.env.PYTH_UPDATE_CONTRACT_ADDRESS || "";
+const PRIVATE_KEY: string = process.env.PRIVATE_KEY || "";
+const RPC_URL: string = process.env.PYTH_UPDATE_RPC_URL || "";
 
 export class PythNode implements Node {
   id: string;
@@ -27,6 +36,27 @@ export class PythNode implements Node {
     }
   }
 
+  async simulateTransaction(updateDataHex: string) {
+      const updateData = [ethers.utils.arrayify(updateDataHex)];
+
+      const provider = ethers.getDefaultProvider(RPC_URL);
+      const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, PythAbi, wallet);
+      const updateFee = await contract.getUpdateFee(updateData);
+
+      console.log("Sending transaction...");
+
+      try {
+          const tx = await contract.updatePriceFeeds(updateData, {value: updateFee});
+          const receipt = await tx.wait();
+
+          console.log(JSON.stringify(receipt));
+      } catch (error: any) {
+          console.error("Transaction error:", error);
+          throw error;
+      }
+  }
+
   async execute() {
     try {
       // Check if we have a valid price ID
@@ -39,6 +69,7 @@ export class PythNode implements Node {
       const priceUpdates = await this.connection.getLatestPriceUpdates([
         this.priceId,
       ]);
+      console.log(JSON.stringify(priceUpdates));
       const parsed_prices = priceUpdates.parsed;
       // Extract price from the response and update outputs
       if (parsed_prices) {
@@ -48,6 +79,8 @@ export class PythNode implements Node {
             parseFloat(priceFeedUpdate.price.price) *
             Math.pow(10, priceFeedUpdate.price.expo);
           this.outputs.price = price;
+
+          await this.simulateTransaction("0x" + priceUpdates.binary.data[0]);
         }
       } else {
         this.outputs.price = NaN;
