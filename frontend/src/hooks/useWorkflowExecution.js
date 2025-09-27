@@ -2,10 +2,16 @@ import { useCallback } from "react";
 
 export const useWorkflowExecution = () => {
   const executeWorkflow = useCallback(
-    async (nodes, edges, workflowName, walletAddress) => {
+    async (
+      nodes,
+      edges,
+      workflowName,
+      walletAddress,
+      workflowType = "once"
+    ) => {
       const workflowData = {
-        walletaddr: walletAddress, // give actual wallet address here
-        type: "once",
+        walletaddr: walletAddress,
+        type: workflowType,
         name: workflowName,
         nodes: {},
         edges: {},

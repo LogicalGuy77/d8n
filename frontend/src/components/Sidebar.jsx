@@ -18,7 +18,7 @@ const nodeTypes = [
   { type: "queryBalance", label: "Query balance", icon: <Wallet /> },
   { type: "sendToken", label: "Send Token to any address", icon: <Send /> },
   { type: "condition", label: "Condition", icon: <GitBranch /> },
-  { type: "swap", label: "1inch Swap", icon: <Repeat /> },
+  { type: "swap", label: "Swap", icon: <Repeat /> },
   { type: "print", label: "Print", icon: <Bug /> },
 ];
 

@@ -68,6 +68,7 @@ export default function App() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [workflowName, setWorkflowName] = useState("My Arbitrage Workflow");
+  const [workflowType, setWorkflowType] = useState("once");
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const { address, isConnected } = useAccount();
   const { executeWorkflow } = useWorkflowExecution();
@@ -191,8 +192,8 @@ export default function App() {
       alert("Please connect your wallet to execute the workflow.");
       return;
     }
-    executeWorkflow(nodes, edges, workflowName, address);
-  }, [executeWorkflow, nodes, edges, workflowName, address, isConnected]);
+    executeWorkflow(nodes, edges, workflowName, address, workflowType);
+  }, [executeWorkflow, nodes, edges, workflowName, address, workflowType, isConnected]);
 
   const handleSave = async () => {
     if (!isConnected) {
@@ -200,7 +201,7 @@ export default function App() {
       return;
     }
     const workflowData = {
-      type: "once",
+      type: workflowType,
       name: workflowName,
       nodes: {},
       edges: {},
@@ -280,6 +281,7 @@ export default function App() {
       });
 
       setWorkflowName(name);
+      setWorkflowType(workflowData.type || "once"); // Set workflow type from loaded data, default to "once"
       setNodes(nodesToLoad);
       setEdges(edgesToLoad);
 
@@ -290,7 +292,7 @@ export default function App() {
         }
       }, 100);
     },
-    [setNodes, setEdges, reactFlowInstance]
+    [setNodes, setEdges, setWorkflowType, reactFlowInstance]
   );
 
   const loadTemplate = useCallback(
@@ -339,13 +341,38 @@ export default function App() {
     <ReactFlowProvider>
       <div className="flex flex-col h-screen font-sans">
         <header className="flex justify-between items-center p-3 border-b bg-white shadow-sm">
-          <input
-            type="text"
-            value={workflowName}
-            onChange={(e) => setWorkflowName(e.target.value)}
-            className="text-2xl font-bold text-slate-800 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md px-2 py-1"
-            placeholder="Workflow Name"
-          />
+          <div className="flex items-center gap-4">
+            <input
+              type="text"
+              value={workflowName}
+              onChange={(e) => setWorkflowName(e.target.value)}
+              className="text-2xl font-bold text-slate-800 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md px-2 py-1"
+              placeholder="Workflow Name"
+            />
+            {/* Workflow Type Toggle */}
+            <div className="flex items-center bg-slate-100 rounded-lg p-1">
+              <button
+                onClick={() => setWorkflowType("once")}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  workflowType === "once"
+                    ? "bg-white text-slate-800 shadow-sm"
+                    : "text-slate-600 hover:text-slate-800"
+                }`}
+              >
+                Once
+              </button>
+              <button
+                onClick={() => setWorkflowType("repeat")}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  workflowType === "repeat"
+                    ? "bg-white text-slate-800 shadow-sm"
+                    : "text-slate-600 hover:text-slate-800"
+                }`}
+              >
+                Repeat
+              </button>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <ViewWorkflows onLoadWorkflow={loadWorkflow} />
             <HypergraphQuerier />
