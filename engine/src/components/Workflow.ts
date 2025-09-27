@@ -68,12 +68,12 @@ export class Workflow {
                                 }
                             }
                         }
-                    }
 
-                    // Step 5: Reduce in-degree and enqueue if ready
-                    inDegree[toNodeId] = (inDegree[toNodeId] ?? 0) - 1;
-                    if (inDegree[toNodeId] === 0) {
-                        queue.push(toNodeId);
+                        // Step 5: Reduce in-degree and enqueue if ready (only for active paths)
+                        inDegree[toNodeId] = (inDegree[toNodeId] ?? 0) - 1;
+                        if (inDegree[toNodeId] === 0) {
+                            queue.push(toNodeId);
+                        }
                     }
                 }
             }
