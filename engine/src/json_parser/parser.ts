@@ -3,6 +3,7 @@ import { ConditionNode } from "../components/ConditionNode.js";
 import { PythNode } from "../components/PythNode.js";
 import { PrintNode } from "../components/PrintNode.js";
 import { UniswapNode } from "../components/UniswapNode.js";
+import { sendTokenNode } from "../components/sendTokenNode.js";
 import { Workflow } from "../components/Workflow.js";
 import type { Edges } from "../interfaces/Edges.js";
 import type { Node } from "../interfaces/Node.js";
@@ -32,6 +33,9 @@ export function parse_workflow(json_workflow: WorkflowSchema) {
         break;
       case "swap":
         nodes[id] = new UniswapNode(id, schema.label, nodeData.tokenIn, nodeData.tokenOut, BigInt(nodeData.amountIn), BigInt(nodeData.amountOutMin));
+        break;
+      case "sendToken":
+        nodes[id] = new sendTokenNode(id, schema.label, nodeData.tokenAddress, nodeData.destination, nodeData.amount);
         break;
       default:
         console.warn(`Unknown node type: ${schema.type} at node ${id}`);
