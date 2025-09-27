@@ -104,13 +104,13 @@ export default function TemplateModal({ isOpen, onClose, onLoadTemplate }) {
                     {selectedTemplate.nodes.map((node, index) => (
                       <div
                         key={node.id}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
                       >
-                        <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                        <div className="min-w-8 min-h-8 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-semibold shrink-0 mt-0.5">
                           {index + 1}
                         </div>
-                        <div>
-                          <h5 className="font-medium text-gray-800">
+                        <div className="flex-1 min-w-0">
+                          <h5 className="font-medium text-gray-800 break-words">
                             {node.data.label}
                           </h5>
                           <p className="text-sm text-gray-600">
@@ -122,7 +122,7 @@ export default function TemplateModal({ isOpen, onClose, onLoadTemplate }) {
                           {node.data.node_data &&
                             Object.keys(node.data.node_data).length > 0 && (
                               <div className="mt-1">
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 break-all">
                                   Config: {JSON.stringify(node.data.node_data)}
                                 </p>
                               </div>

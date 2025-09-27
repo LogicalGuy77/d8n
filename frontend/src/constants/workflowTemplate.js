@@ -2,11 +2,11 @@ import { tokens } from "./tokenMappings";
 /**
  * Template 1: Simple "Buy the Dip" Strategy
  * Description: Monitors the price of ETH/USD. If the price drops below a
- * specified target ($3,200), it executes a swap from a stablecoin (USDC) to ETH.
+ * specified target ($4,500), it executes a swap from a stablecoin (USDC) to ETH.
  */
 export const buyTheDipTemplate = {
   name: "Buy The Dip (WETH)",
-  description: "Swaps USDC for WETH when the price drops below $3,200.",
+  description: "Swaps USDC for WETH when the price drops below $4,500.",
   nodes: [
     {
       id: "pyth-1",
@@ -22,8 +22,8 @@ export const buyTheDipTemplate = {
       type: "condition",
       position: { x: 350, y: 150 },
       data: {
-        label: "Price > $3,200?",
-        node_data: { condition: "price > 3200" },
+        label: "Price < $4,500?",
+        node_data: { condition: "price < 4500" },
       },
     },
     {
@@ -78,59 +78,104 @@ export const buyTheDipTemplate = {
 };
 
 /**
- * Template 2: Simple "Take Profit" Strategy
- * Description: Monitors the price of BTC/USD. If the price rises above a
- * specified target ($75,000), it executes a swap from BTC to a stablecoin (USDC).
+ * Template 2: Payroll Executor
+ * Description: Queries wallet balance and conditionally sends tokens to multiple recipients
+ * based on balance conditions. Used for automated payroll distribution.
  */
 export const takeProfitTemplate = {
-  name: "Take Profit (DAI)",
-  description: "Swaps USDC for DAI when the price goes above $75,000.",
+  name: "Payroll Executor",
+  description:
+    "Queries balance and sends tokens to multiple recipients based on conditions.",
   nodes: [
     {
-      id: "pyth-1",
-      type: "pyth-network",
-      position: { x: 50, y: 150 },
+      id: "2",
+      type: "queryBalance",
+      position: { x: -26.175446148147614, y: 4.589882602126821 },
       data: {
-        label: "Pyth Price Feed",
-        node_data: { symbol: "BTC_USD" },
-      },
-    },
-    {
-      id: "condition-1",
-      type: "condition",
-      position: { x: 350, y: 150 },
-      data: {
-        label: "Price > $75,000?",
-        node_data: { condition: "price > 75000" },
-      },
-    },
-    {
-      id: "swap-1",
-      type: "swap",
-      position: { x: 650, y: 150 },
-      data: {
-        label: "Swap USDC to DAI",
+        label: "Query balance",
         node_data: {
-          tokenIn: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-          tokenOut: "0x7169D38820dfd117C3FA1f22a697dBA58d90BA06",
-          amountIn: "10000000",
-          amountOutMin: "0",
+          tokenAddress: "",
+          walletAddress: "0x8a453B41c6E454D5b3152f32908Bc9A0DDa689B4",
+        },
+      },
+    },
+    {
+      id: "3",
+      type: "condition",
+      position: { x: 262.0481571871899, y: 71.09010289220775 },
+      data: {
+        label: "Condition",
+        node_data: { condition: "price > 0.2" },
+      },
+    },
+    {
+      id: "4",
+      type: "sendToken",
+      position: { x: 643.5793536980883, y: -71.93722709194532 },
+      data: {
+        label: "Send Token to any address",
+        node_data: {
+          tokenAddress: "",
+          destination: "",
+          amount: "",
+        },
+      },
+    },
+    {
+      id: "5",
+      type: "sendToken",
+      position: { x: 639.5870948696503, y: 97.32078227214592 },
+      data: {
+        label: "Send Token to any address",
+        node_data: {
+          tokenAddress: "",
+          destination: "0xaa8A4A0df322aB0a1B5D623450ee1d426aC43C2F",
+          amount: "0.001",
+        },
+      },
+    },
+    {
+      id: "7",
+      type: "sendToken",
+      position: { x: 644.3980511109968, y: 277.34098178853526 },
+      data: {
+        label: "Send Token to any address",
+        node_data: {
+          tokenAddress: "",
+          destination: "0xaa8A4A0df322aB0a1B5D623450ee1d426aC43C2F",
+          amount: "0.001",
         },
       },
     },
   ],
   edges: [
     {
-      id: "e1-2",
-      source: "pyth-1",
-      target: "condition-1",
-      sourceHandle: "price",
+      id: "e2-3",
+      source: "2",
+      target: "3",
+      sourceHandle: "balance",
       targetHandle: "price",
     },
     {
-      id: "e2-3",
-      source: "condition-1",
-      target: "swap-1",
+      id: "e3-4",
+      source: "3",
+      target: "4",
+      sourceHandle: "true-path",
+      targetHandle: "activate",
+      label: "True",
+    },
+    {
+      id: "e3-5",
+      source: "3",
+      target: "5",
+      sourceHandle: "true-path",
+      targetHandle: "activate",
+      label: "True",
+    },
+    {
+      id: "e3-7",
+      source: "3",
+      target: "7",
       sourceHandle: "true-path",
       targetHandle: "activate",
       label: "True",

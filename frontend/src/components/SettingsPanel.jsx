@@ -71,7 +71,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
             <input
               id="condition"
               name="condition"
-              defaultValue={node.data.node_data?.condition}
+              value={node.data.node_data?.condition || ""}
               onChange={handleInputChange}
               className="p-2 border rounded"
               placeholder="e.g., price > 100000"
@@ -128,7 +128,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="makingAmount"
                 name="makingAmount"
-                defaultValue={node.data.node_data?.makingAmount || ""}
+                value={node.data.node_data?.makingAmount || ""}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="e.g., 1000"
@@ -142,7 +142,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="takingAmount"
                 name="takingAmount"
-                defaultValue={node.data.node_data?.takingAmount || ""}
+                value={node.data.node_data?.takingAmount || ""}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="e.g., 900"
@@ -181,7 +181,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="walletAddress"
                 name="walletAddress"
-                defaultValue={node.data.node_data?.walletAddress || ""}
+                value={node.data.node_data?.walletAddress || ""}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="0x... (leave empty to use connected wallet)"
@@ -239,7 +239,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
                 name="amountIn"
                 type="number"
                 step="any"
-                defaultValue={(() => {
+                value={(() => {
                   const currentAmount = node.data.node_data?.amountIn || "0";
                   const tokenInAddress = node.data.node_data?.tokenIn;
                   const token = Object.values(tokens).find(
@@ -260,7 +260,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="amountOutMin"
                 name="amountOutMin"
-                defaultValue={node.data.node_data?.amountOutMin || "0"}
+                value={node.data.node_data?.amountOutMin || "0"}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="e.g., 0"
@@ -298,7 +298,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="destination"
                 name="destination"
-                defaultValue={node.data.node_data?.destination || ""}
+                value={node.data.node_data?.destination || ""}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="0x..."
@@ -312,7 +312,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
               <input
                 id="amount"
                 name="amount"
-                defaultValue={node.data.node_data?.amount || ""}
+                value={node.data.node_data?.amount || ""}
                 onChange={handleInputChange}
                 className="p-2 border rounded w-full mt-1"
                 placeholder="e.g., 0.1 (for ETH) or raw amount (for tokens)"
@@ -330,7 +330,7 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
             <input
               id="sample"
               name="sample"
-              defaultValue={node.data.node_data?.sample || "sample"}
+              value={node.data.node_data?.sample || "sample"}
               onChange={handleInputChange}
               className="p-2 border rounded w-full mt-1"
               placeholder="Debug message or sample data"

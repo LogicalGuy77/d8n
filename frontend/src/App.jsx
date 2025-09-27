@@ -142,11 +142,20 @@ export default function App() {
     (type) => {
       const config = NODE_CONFIG[type];
       if (!config) return;
+
+      // Create a deep copy of the config to ensure each node has its own independent data
+      const deepCopyConfig = JSON.parse(JSON.stringify(config));
+
       const newNode = {
         id: getId(),
         type: "custom",
         position: { x: Math.random() * 400, y: Math.random() * 400 },
-        data: { type: type, ...JSON.parse(JSON.stringify(config)) },
+        data: {
+          type: type,
+          ...deepCopyConfig,
+          // Ensure node_data is a fresh object for each node instance
+          node_data: { ...deepCopyConfig.node_data },
+        },
       };
       setNodes((nds) => nds.concat(newNode));
     },
@@ -193,7 +202,15 @@ export default function App() {
       return;
     }
     executeWorkflow(nodes, edges, workflowName, address, workflowType);
-  }, [executeWorkflow, nodes, edges, workflowName, address, workflowType, isConnected]);
+  }, [
+    executeWorkflow,
+    nodes,
+    edges,
+    workflowName,
+    address,
+    workflowType,
+    isConnected,
+  ]);
 
   const handleSave = async () => {
     if (!isConnected) {
