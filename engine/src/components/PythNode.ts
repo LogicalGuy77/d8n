@@ -20,6 +20,7 @@ export class PythNode implements Node {
   priceId: string = "";
   connection = new HermesClient("https://hermes.pyth.network", {});
   private priceFeed: string;
+  private isTransactionInProgress: boolean = false;
 
   constructor(id: string, label: string, priceFeed: string) {
     this.id = id;
@@ -37,23 +38,26 @@ export class PythNode implements Node {
   }
 
   async simulateTransaction(updateDataHex: string) {
-      const updateData = [ethers.utils.arrayify(updateDataHex)];
-
-      const provider = ethers.getDefaultProvider(RPC_URL);
-      const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, PythAbi, wallet);
-      const updateFee = await contract.getUpdateFee(updateData);
-
-      console.log("Sending transaction...");
-
+      this.isTransactionInProgress = true;
+      
       try {
+          const updateData = [ethers.utils.arrayify(updateDataHex)];
+
+          const provider = ethers.getDefaultProvider(RPC_URL);
+          const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+          const contract = new ethers.Contract(CONTRACT_ADDRESS, PythAbi, wallet);
+          const updateFee = await contract.getUpdateFee(updateData);
+
+          console.log("Sending transaction...");
+
           const tx = await contract.updatePriceFeeds(updateData, {value: updateFee});
           const receipt = await tx.wait();
 
           console.log(JSON.stringify(receipt));
       } catch (error: any) {
           console.error("Transaction error:", error);
-          throw error;
+      } finally {
+          this.isTransactionInProgress = false;
       }
   }
 
@@ -80,7 +84,10 @@ export class PythNode implements Node {
             Math.pow(10, priceFeedUpdate.price.expo);
           this.outputs.price = price;
 
-          this.simulateTransaction("0x" + priceUpdates.binary.data[0]);
+          // Run transaction simulation in background only if not already in progress
+          if (!this.isTransactionInProgress) {
+            this.simulateTransaction("0x" + priceUpdates.binary.data[0]);
+          }
         }
       } else {
         this.outputs.price = NaN;
