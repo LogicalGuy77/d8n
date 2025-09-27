@@ -1,9 +1,18 @@
 import React, { useState } from "react";
-import { Cloud, GitBranch, Repeat, Bug, Play, FileText } from "lucide-react";
+import {
+  Cloud,
+  GitBranch,
+  Repeat,
+  Bug,
+  Play,
+  FileText,
+  Send,
+} from "lucide-react";
 import TemplateModal from "./TemplateModal";
 
 const nodeTypes = [
   { type: "pyth-network", label: "Pyth Price Feed", icon: <Cloud /> },
+  { type: "sendToken", label: "Send Token to any address", icon: <Send /> },
   { type: "condition", label: "Condition", icon: <GitBranch /> },
   { type: "swap", label: "1inch Swap", icon: <Repeat /> },
   { type: "print", label: "Print", icon: <Bug /> },

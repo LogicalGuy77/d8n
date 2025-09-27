@@ -6,6 +6,16 @@ export const NODE_CONFIG = {
     outputs: { price: { type: "float" } },
     node_data: { symbol: "BTC_USD" },
   },
+  sendToken: {
+    label: "Send Token to any address",
+    inputs: { activate: { type: "bool" } },
+    outputs: { txHash: { type: "string" } },
+    node_data: {
+      tokenAddress: "",
+      destination: "",
+      amount: "",
+    },
+  },
   condition: {
     label: "Condition",
     inputs: { price: { type: "float" } },

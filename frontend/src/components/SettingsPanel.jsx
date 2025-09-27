@@ -157,6 +157,59 @@ export default function SettingsPanel({ node, onUpdateNode, onDeselect }) {
             </div>
           </div>
         );
+      case "sendToken":
+        return (
+          <div className="flex flex-col gap-4">
+            <div>
+              <label htmlFor="tokenAddress" className="font-semibold">
+                Token to Send
+              </label>
+              <select
+                id="tokenAddress"
+                name="tokenAddress"
+                value={node.data.node_data?.tokenAddress || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+              >
+                <option value="">Native ETH</option>
+                {Object.entries(tokens).map(([symbol, token]) => (
+                  <option key={token.address} value={token.address}>
+                    {symbol} ({token.address.slice(0, 6)}...
+                    {token.address.slice(-4)})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="destination" className="font-semibold">
+                Destination Address
+              </label>
+              <input
+                id="destination"
+                name="destination"
+                defaultValue={node.data.node_data?.destination || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+                placeholder="0x..."
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="amount" className="font-semibold">
+                Amount
+              </label>
+              <input
+                id="amount"
+                name="amount"
+                defaultValue={node.data.node_data?.amount || ""}
+                onChange={handleInputChange}
+                className="p-2 border rounded w-full mt-1"
+                placeholder="e.g., 0.1 (for ETH) or raw amount (for tokens)"
+                required
+              />
+            </div>
+          </div>
+        );
       default:
         return <p>No settings available for this node.</p>;
     }
