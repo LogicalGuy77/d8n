@@ -2,7 +2,7 @@
 export const NODE_CONFIG = {
   "pyth-network": {
     label: "Pyth Price Feed",
-    inputs: {},
+    inputs: { activate: { type: "bool" } },
     outputs: { price: { type: "float" } },
     node_data: { symbol: "BTC_USD" },
   },
