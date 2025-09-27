@@ -14,7 +14,7 @@ import TemplateModal from "./TemplateModal";
 
 const nodeTypes = [
   { type: "pyth-network", label: "Pyth Price Feed", icon: <Cloud /> },
-  { type: "limitOrder", label: "Put a limit order on 1inch", icon: <Target /> },
+  { type: "limitOrder", label: "1inch Limit Order", icon: <Target /> },
   { type: "queryBalance", label: "Query balance", icon: <Wallet /> },
   { type: "sendToken", label: "Send Token to any address", icon: <Send /> },
   { type: "condition", label: "Condition", icon: <GitBranch /> },

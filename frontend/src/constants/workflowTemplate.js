@@ -184,106 +184,82 @@ export const takeProfitTemplate = {
 };
 
 /**
- * Template 3: Price Range Alert
- * Description: A non-trading workflow that checks if the price of SOL is
- * outside a defined range (e.g., $120 - $180) and logs a message.
- * This demonstrates multi-condition logic.
+ * Template 3: Simple Limit Order Strategy
+ * Description: Monitors the price of BTC/USD and places a limit order to buy INCH
+ * when the price is above $50,000. This demonstrates a basic limit order workflow.
  */
 export const priceRangeAlertTemplate = {
-  name: "Price Range Alert (SOL)",
+  name: "Simple Limit Order (INCH)",
   description:
-    "Logs a message if the price of SOL moves outside the $120-$180 range.",
+    "Places a limit order to buy INCH when BTC price is above $50,000.",
   nodes: [
     {
       id: "pyth-1",
       type: "pyth-network",
-      position: { x: 50, y: 200 },
+      position: { x: 50, y: 150 },
       data: {
         label: "Pyth Price Feed",
-        node_data: { symbol: "SOL_USD" },
+        node_data: { symbol: "BTC_USD" },
       },
     },
     {
-      id: "condition-high",
+      id: "condition-1",
       type: "condition",
-      position: { x: 350, y: 100 },
+      position: { x: 350, y: 150 },
       data: {
-        label: "Price > $180?",
-        node_data: { condition: "price > 180" },
+        label: "Price > $50000?",
+        node_data: { condition: "price > 50000" },
       },
     },
     {
-      id: "condition-low",
-      type: "condition",
-      position: { x: 350, y: 300 },
-      data: {
-        label: "Price < $120?",
-        node_data: { condition: "price < 120" },
-      },
-    },
-    {
-      id: "print-high",
-      type: "print",
+      id: "limitOrder-1",
+      type: "limitOrder",
       position: { x: 650, y: 100 },
       data: {
-        label: "Print: High Alert",
-        node_data: { sample: "SOL price is above the target range!" },
+        label: "Buy INCH Limit Order",
+        node_data: {
+          makerToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          takerToken: "0xc5fecC3a29Fb57B5024eEc8a2239d4621e111CBE",
+          makingAmount: "1",
+          takingAmount: "4",
+        },
       },
     },
     {
-      id: "print-low",
+      id: "print-1",
       type: "print",
-      position: { x: 650, y: 300 },
+      position: { x: 650, y: 250 },
       data: {
-        label: "Print: Low Alert",
-        node_data: { sample: "SOL price is below the target range!" },
+        label: "Print: No Order",
+        node_data: {
+          sample: "Price is above threshold. No limit order placed.",
+        },
       },
     },
   ],
   edges: [
     {
-      id: "e1-ch",
+      id: "e1-2",
       source: "pyth-1",
-      target: "condition-high",
+      target: "condition-1",
       sourceHandle: "price",
       targetHandle: "price",
     },
     {
-      id: "e1-cl",
-      source: "pyth-1",
-      target: "condition-low",
-      sourceHandle: "price",
-      targetHandle: "price",
-    },
-    {
-      id: "ech-ph",
-      source: "condition-high",
-      target: "print-high",
+      id: "e2-3",
+      source: "condition-1",
+      target: "limitOrder-1",
       sourceHandle: "true-path",
-      targetHandle: "test",
+      targetHandle: "activate",
       label: "True",
     },
     {
-      id: "ecl-pl",
-      source: "condition-low",
-      target: "print-low",
-      sourceHandle: "true-path",
+      id: "e2-4",
+      source: "condition-1",
+      target: "print-1",
+      sourceHandle: "false-path",
       targetHandle: "test",
-      label: "True",
-    },
-    {
-      id: "e1-ph",
-      source: "pyth-1",
-      target: "print-high",
-      sourceHandle: "price",
-      targetHandle: "test",
-    },
-    {
-      id: "e1-pl",
-      source: "pyth-1",
-      target: "print-low",
-      sourceHandle: "price",
-      targetHandle: "test",
+      label: "False",
     },
   ],
 };

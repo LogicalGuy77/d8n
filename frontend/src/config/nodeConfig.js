@@ -6,27 +6,27 @@ export const NODE_CONFIG = {
     outputs: { price: { type: "float" } },
     node_data: { symbol: "BTC_USD" },
   },
-  limitOrder:{
-    label: "Put a limit order on 1inch",
-    inputs: { activate: {type: "bool"}},
+  limitOrder: {
+    label: "1inch Limit Order",
+    inputs: { activate: { type: "bool" } },
     outputs: {},
     node_data: {
       makerToken: "",
       takerToken: "",
       makingAmount: "",
-      takingAmount: ""
-    }
+      takingAmount: "",
+    },
   },
   queryBalance: {
     label: "Query balance",
-    inputs: {},
+    inputs: { activate: { type: "bool" } },
     outputs: {
-      "balance": 0
+      balance: 0,
     },
     node_data: {
       tokenAddress: "",
-      walletAddress: ""
-    }
+      walletAddress: "",
+    },
   },
   sendToken: {
     label: "Send Token to any address",
