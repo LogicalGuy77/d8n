@@ -15,7 +15,7 @@ export class PrintNode implements Node {
 
     execute() {
         for(const[input_name, input_value] of Object.entries(this.inputs)){
-            console.log(`[${input_name}]: ${input_value}`);
+            console.log(`[${input_name}]: ${JSON.stringify(input_value)}`);
         }
     }
 }
