@@ -13,7 +13,7 @@ export function useNodeStatus(walletAddress) {
     try {
       // console.log(`[FRONTEND] Polling status for wallet: ${walletAddress}`);
       const response = await fetch(
-        `http://localhost:3000/status?wallet=${walletAddress}`
+        `${import.meta.env.VITE_API_URL}/status?wallet=${walletAddress}`
       );
 
       if (response.ok) {

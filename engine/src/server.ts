@@ -11,7 +11,7 @@ const user_workflows: Record<string, Workflow> = {};
 // Enable CORS for all routes
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], // Allow both frontend and any local development
+    origin: '*', // Allow both frontend and any local development
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

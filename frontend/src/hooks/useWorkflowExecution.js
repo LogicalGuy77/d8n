@@ -40,7 +40,7 @@ export const useWorkflowExecution = () => {
       console.log("Executing Workflow:", JSON.stringify(workflowData, null, 2));
 
       try {
-        const response = await fetch("http://localhost:3000/workflow", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/workflow`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ json_workflow: workflowData }),
