@@ -105,7 +105,7 @@ app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-const port = process.env.PORT || 8080;
+const port = parseInt(process.env.PORT || "8080", 10);
 
 const server = app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port ${port}`);
