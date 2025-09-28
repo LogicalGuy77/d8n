@@ -22,7 +22,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "prod": "node ./dist/server.js",
+    "start": "node ./dist/server.js",
+    "dev": "tsx ./src/server.ts",
     "test": "tsx ./src/server.ts"
   }
 }
