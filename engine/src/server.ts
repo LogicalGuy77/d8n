@@ -11,7 +11,7 @@ const user_workflows: Record<string, Workflow> = {};
 // Enable CORS for all routes
 app.use(
   cors({
-    origin: '*', // Allow both frontend and any local development
+    origin: "*", // Allow both frontend and any local development
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -80,6 +80,12 @@ app.post("/stop", (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Starting engine on port ${port}`);
-});
+// For Vercel deployment
+export default app;
+
+// For local development
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log(`Starting engine on port ${port}`);
+  });
+}
