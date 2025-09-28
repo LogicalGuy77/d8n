@@ -116,8 +116,8 @@ export const takeProfitTemplate = {
         label: "Send Token to any address",
         node_data: {
           tokenAddress: "",
-          destination: "",
-          amount: "",
+          destination: "0xa9aaC8b17F7fb7dF0104ECd53F8b635b8052b97E",
+          amount: "0.001",
         },
       },
     },
