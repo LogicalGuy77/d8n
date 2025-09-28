@@ -18,7 +18,7 @@ export default function ViewWorkflows({ onLoadWorkflow }) {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/api/workflows/${address}`
+        `http://d8n-dz9h.vercel.app/api/workflows/${address}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch workflows.");
