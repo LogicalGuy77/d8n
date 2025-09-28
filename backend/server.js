@@ -114,3 +114,5 @@ connectDB().then(() => {
     console.log(`d8n backend server listening at http://localhost:${port}`);
   });
 });
+
+export default app;
