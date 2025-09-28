@@ -115,4 +115,4 @@ connectDB().then(() => {
   });
 });
 
-export default app;
+module.exports = app;
