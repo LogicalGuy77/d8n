@@ -80,12 +80,7 @@ app.post("/stop", (req, res) => {
   }
 });
 
-// For Vercel deployment
-export default app;
+app.listen(port, () => {
+  console.log(`Starting engine on port ${port}`);
+});
 
-// For local development
-if (process.env.NODE_ENV !== "production") {
-  app.listen(port, () => {
-    console.log(`Starting engine on port ${port}`);
-  });
-}
