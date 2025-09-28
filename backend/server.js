@@ -109,10 +109,12 @@ app.get("/api/workflows/:walletAddress", async (req, res) => {
 });
 
 // Connect to DB and then start the server
-connectDB().then(() => {
-  app.listen(port, () => {
-    console.log(`d8n backend server listening at http://localhost:${port}`);
-  });
-});
+// connectDB().then(() => {
+//   app.listen(port, () => {
+//     console.log(`d8n backend server listening at http://localhost:${port}`);
+//   });
+// });
+
+connectDB();
 
 module.exports = app;
